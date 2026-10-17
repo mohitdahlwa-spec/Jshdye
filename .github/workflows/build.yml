@@ -5,6 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fix folders
+        run: |
+          mkdir -p src/main/java/com/codexmc/servuxcompat src/main/resources
+          find . -path ./src -prune -o -name "*.java" -type f -exec mv {} src/main/java/com/codexmc/servuxcompat/ \;
+          find . -path ./src -prune -o \( -name config.yml -o -name plugin.yml \) -type f -exec mv {} src/main/resources/ \;
+          find src -type f
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -13,6 +19,7 @@ jobs:
         with:
           gradle-version: 9.4.1
       - run: gradle build
+      - run: unzip -l build/libs/*.jar
       - uses: actions/upload-artifact@v4
         with:
           name: plugin
